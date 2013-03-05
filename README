@@ -1,0 +1,76 @@
+Introduction
+------------
+
+This is a basic DCC command station for the Raspberry Pi. It generates
+output suitable for feeding into an L298N or similar H-bridge. I've
+successfully used it with one like this:
+
+http://www.ebay.co.uk/itm/Dual-H-Bridge-DC-Stepper-Motor-Drive-Controller-Board-Module-Arduino-L298N-/390535254940
+
+(if you try it with something like this, bear in mind that there is no
+short circuit/overcurrent detection)
+
+Building and running
+--------------------
+
+To build, run make.
+
+Connect the pins as follows:
+
+	Raspberry Pi			L298N board
+	-------------------------------------------
+	GPIO0 (pin 3 on the header)	IN1
+	GPIO1 (pin 5)			IN2
+	GPIO4 (pin 7)			ENA
+	GND (eg pin 6)			GND
+
+Run gpiodcc, and telnet to localhost port 4303. You should be able to issue
+the following commands:
+
+SET PROTOCOL SRCP 0.8.3
+SET CONNECTIONMODE SRCP COMMAND
+GO
+
+Then, to initialise a locomotive decoder
+
+INIT 1 GL <addr> N 1 128 <functions>
+	<addr> = loco address
+	<functions> = number of functions, eg 1 for FL only
+
+And, to set speed/direction/function state
+
+SET 1 GL <addr> <dir> <speed> <max speed> <fl> <f1> <f2>...
+	<addr> = loco address
+	<dir> = 0 (backwards), 1 (forwards), 2 (emergency stop)
+	<speed> = 0 (stop) to <max speed>
+	<max speed> = a number which defines the top speed. eg, 100 makes
+		<speed> a percentage
+	<fl> = status of FL (or function 0). 1 = on, 0 = off
+	<f1>, etc = status of function. Only supply as many as there are
+		functions defined in INIT; any others will be ignored
+
+Example:
+
+INIT 1 GL 5 N 1 128 1
+	- define a locomotive at (short) address 5, 128 speed steps, 1
+	function
+
+SET 1 GL 5 1 50 100 1
+	- forwards at 50% speed with the front light on
+
+Note
+----
+
+This code works with JMRI, and SRCP Client on Android. Other things (such as
+Rocrail) have not been tried. It is a very incomplete implementation of
+SRCP
+
+The supported loco types are very limited for the moment:
+	Only 128 speed steps
+	Only 5 functions (FL, F1-F4)
+	Only short addresses
+
+There is currently no support for programming (either on a programming track
+or the main), or any form of accessory decoder
+
+This code should be regarded as experimental and incomplete
