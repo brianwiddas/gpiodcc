@@ -24,8 +24,8 @@ Connect the pins as follows:
 	GPIO4 (pin 7)			ENA
 	GND (eg pin 6)			GND
 
-Run gpiodcc, and telnet to localhost port 4303. You should be able to issue
-the following commands:
+Run gpiodcc (as root, or with sudo), and telnet to localhost port 4303. You
+should be able to issue the following commands:
 
 SET PROTOCOL SRCP 0.8.3
 SET CONNECTIONMODE SRCP COMMAND
